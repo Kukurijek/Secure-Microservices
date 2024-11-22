@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: group3-hello-world-deployment
+  labels:
+    app: group3-hello-world
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: group3-hello-world
+  template:
+    metadata:
+      labels:
+        app: group3-hello-world
+    spec:
+      containers:
+      - name: group3-hello-world
+        image: group3-hello-world:latest  # the image comes from the docker registry
