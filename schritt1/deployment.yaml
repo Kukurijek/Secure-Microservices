@@ -16,4 +16,4 @@ spec:
     spec:
       containers:
       - name: group3-hello-world
-        image: group3-hello-world:latest  # the image comes from the docker registry
+        image: kukurijek/group3-hello-world:0.1.0 # the image comes from the docker registry
