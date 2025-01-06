@@ -94,8 +94,27 @@ Instead of running each command manually, you can use the provided `deploy-servi
    ```
 
 This will automatically deploy all the services.
+---
+### 5. Testing the Radius Service
 
-### 5. Verify Deployment
+The `radius-service` is not exposed externally (using `NodePort`) as it is intended for internal cluster communication. You can still test the service locally by using **port forwarding**.
+
+Run the following command to forward the port:
+
+```bash
+kubectl port-forward svc/radius-service 8000:80
+```
+
+Once the port forwarding is active, you can test the service locally with a `curl` command:
+
+```bash
+curl -X GET "http://localhost:8000" -H "username-header: mresch" -H "pass-header: 12345678"
+```
+
+This will send a test request to the `radius-service` and verify its functionality.
+
+---
+### 6. Verify Deployment
 
 After applying all configurations, verify that your pods and services are running:
 
