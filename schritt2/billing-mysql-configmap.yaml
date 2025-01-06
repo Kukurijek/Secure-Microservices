@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: billing-mysql-init-sql-scripts
+data:
+  schema-and-data.sql: |
+    -- Create the database if it doesn't exist
+    CREATE DATABASE IF NOT EXISTS userBilling;
+
+    -- Switch to the correct database
+    USE userBilling;
+
+    -- Create the userBilling table
+    CREATE TABLE `userBilling` (
+      `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+      `benutzername` VARCHAR(10) DEFAULT NULL,
+      `hasPaid` INT(11) DEFAULT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    -- Insert initial data into the userBilling table
+    INSERT INTO `userBilling` (`id`, `benutzername`, `hasPaid`)
+    VALUES
+      (1, 'mresch', 1),
+      (2, 'hchristoph', 0),
+      (3, 'nfilipovic', 1);

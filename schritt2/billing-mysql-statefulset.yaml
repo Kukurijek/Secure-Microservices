@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: billing-mysql
+spec:
+  serviceName: "billing-mysql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: billing-mysql
+  template:
+    metadata:
+      labels:
+        app: billing-mysql
+    spec:
+      containers:
+      - name: billing-mysql
+        image: mysql:8.0  # official MySQL image
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_DATABASE
+          value: "userBilling"
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: billing-db-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: billing-db-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: billing-db-secrets
+              key: MYSQL_PASSWORD
+        volumeMounts:
+        - name: billing-mysql-data
+          mountPath: /var/lib/mysql
+        - name: billing-mysql-init-sql-scripts
+          mountPath: /docker-entrypoint-initdb.d
+          readOnly: true
+      volumes:
+      - name: billing-mysql-data
+        persistentVolumeClaim:
+          claimName: billing-mysql-data
+      - name: billing-mysql-init-sql-scripts
+        configMap:
+          name: billing-mysql-init-sql-scripts
