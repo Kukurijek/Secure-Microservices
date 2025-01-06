@@ -77,6 +77,24 @@ Use `kubectl` to apply the YAML files for different components of your applicati
 
 ---
 
+### Alternative: Use the `deploy-services.sh` Script
+
+Instead of running each command manually, you can use the provided `deploy-services.sh` script to apply all configurations at once.
+
+1. Make the script executable:
+
+   ```bash
+   chmod +x deploy-services.sh
+   ```
+
+2. Run the script:
+
+   ```bash
+   ./deploy-services.sh
+   ```
+
+This will automatically deploy all the services.
+
 ### 5. Verify Deployment
 
 After applying all configurations, verify that your pods and services are running:
