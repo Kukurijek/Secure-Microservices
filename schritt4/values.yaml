@@ -1,0 +1,18 @@
+replicaCount: 2
+
+image:
+  repository: kukurijek/radius-service
+  tag: 0.2.1
+  pullPolicy: IfNotPresent
+
+env:
+  USERINFO_DB_HOST: "mysql.default.svc.cluster.local"
+  BILLING_DB_HOST: "billing-mysql.default.svc.cluster.local"
+  USERINFO_DB_NAME: "userInformation"
+  BILLING_DB_NAME: "userBilling"
+
+secrets:
+  BILLING_DB_USER: billing_db_user
+  BILLING_DB_PASSWORD: billing_db_password
+  USERINFO_DB_USER: userinfo_db_user
+  USERINFO_DB_PASSWORD: userinfo_db_password
