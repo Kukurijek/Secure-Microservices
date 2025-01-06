@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radius-service
+  labels:
+    app: radius-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: radius-service
+  template:
+    metadata:
+      labels:
+        app: radius-service
+    spec:
+      containers:
+      - name: radius-service
+        image: kukurijek/radius-service:0.2.1  # Can be easy automated with helm
+        ports:
+        - containerPort: 8000
+        env:
+        - name: USERINFO_DB_HOST
+          value: "mysql.default.svc.cluster.local"  # Hostname of MySQL DB
+        - name: BILLING_DB_HOST
+          value: "billing-mysql.default.svc.cluster.local"  # Hostname of billing MySQL DB
+        - name: USERINFO_DB_NAME
+          value: "userInformation"
+        - name: BILLING_DB_NAME
+          value: "userBilling"
+        - name: BILLING_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: BILLING_DB_USER
+        - name: BILLING_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: BILLING_DB_PASSWORD
+        - name: USERINFO_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: USERINFO_DB_USER
+        - name: USERINFO_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: USERINFO_DB_PASSWORD

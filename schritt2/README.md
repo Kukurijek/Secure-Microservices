@@ -1,0 +1,104 @@
+
+# Setup Instructions for macOS
+
+This guide will walk you through setting up the required environment on macOS for deploying your application using Kubernetes.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+- A stable internet connection.
+- Basic knowledge of the terminal.
+
+---
+
+## Step-by-Step Guide
+
+### 1. Install Homebrew
+
+Homebrew is a package manager for macOS that simplifies installing software.
+
+Run the following command to install Homebrew:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+---
+
+### 2. Install Minikube with Homebrew
+
+Minikube allows you to run Kubernetes locally. Install it using Homebrew:
+
+```bash
+brew install minikube
+```
+
+After installation, verify Minikube is installed correctly:
+
+```bash
+minikube version
+```
+
+---
+
+### 3. Start Minikube
+
+Start the Minikube cluster:
+
+```bash
+minikube start
+```
+
+---
+
+### 4. Apply Kubernetes Configurations
+
+Use `kubectl` to apply the YAML files for different components of your application. Ensure `kubectl` is configured correctly for Minikube:
+
+1. **Apply all `.yaml` files from the `billing-db` folder:**
+
+   ```bash
+   kubectl apply -f billing-db/
+   ```
+
+2. **Apply all `.yaml` files from the `mysql` folder:**
+
+   ```bash
+   kubectl apply -f mysql/
+   ```
+
+3. **Apply all `.yaml` files from the `radius-service` folder:**
+
+   ```bash
+   kubectl apply -f radius-service/
+   ```
+
+---
+
+### 5. Verify Deployment
+
+After applying all configurations, verify that your pods and services are running:
+
+```bash
+kubectl get pods
+kubectl get services
+```
+
+---
+
+## Additional Notes
+
+- If you encounter any issues, check the logs of the pods for debugging:
+  ```bash
+  kubectl logs <pod-name>
+  ```
+- Minikube dashboard can provide a visual overview of your cluster:
+  ```bash
+  minikube dashboard
+  ```
+
+---
+
+This concludes the setup guide. If you have questions or issues, feel free to reach out! 😊
