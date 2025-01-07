@@ -14,9 +14,11 @@ spec:
       labels:
         app: radius-service
     spec:
+      serviceAccountName: radius-service-sa
+      automountServiceAccountToken: false
       containers:
       - name: radius-service
-        image: kukurijek/radius-service:0.2.1  # Can be easy automated with helm
+        image: kukurijek/radius-service:0.2.1
         ports:
         - containerPort: 8000
         env:
