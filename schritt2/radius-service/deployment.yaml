@@ -57,6 +57,13 @@ spec:
           capabilities:
             drop:                         # Drop all capabilities by default
             - ALL
+        resources:                              # Define QoS with resource requests and limits
+          requests:
+            memory: "256Mi"                    # Minimum memory guaranteed for the container
+            cpu: "500m"                        # Minimum CPU guaranteed for the container
+          limits:
+            memory: "512Mi"                    # Maximum memory container can consume
+            cpu: "1000m"
       securityContext:
         runAsNonRoot: true                # Ensure the container runs as non-root user
         runAsUser: 1000                   # Specify a non-root user ID
