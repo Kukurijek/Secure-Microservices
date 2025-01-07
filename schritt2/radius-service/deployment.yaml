@@ -48,3 +48,13 @@ spec:
             secretKeyRef:
               name: db-secrets
               key: USERINFO_DB_PASSWORD
+        securityContext:
+          allowPrivilegeEscalation: false  # Disable privilege escalation
+          readOnlyRootFilesystem: true    # Set root filesystem to read-only
+          privileged: false               # Avoid privileged containers
+          capabilities:
+            drop:                         # Drop all capabilities by default
+            - ALL
+      securityContext:
+        runAsNonRoot: true                # Ensure the container runs as non-root user
+        runAsUser: 1000                   # Specify a non-root user ID
