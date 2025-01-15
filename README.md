@@ -1,55 +1,141 @@
-# 12-Factor App - #2 Dependencies & 4# Backing Service Erklärung
 
-Von Filipović Nemanja, Christoph Hiess, Resch Maximilian
+# Setup Instructions for macOS
 
-### 12-Factor kurz erklärt
+This guide will walk you through setting up the required environment on macOS for deploying your application using Kubernetes.
 
-Um skalierbare Anwendungen zu entwickeln, die sich flexibel und kontinuierlich bereitstellen lassen, kann die 12-Factor-Methode angewendet werden.
+---
 
-Die 12 Faktoren und deren Beschreibungen zeigen bewährte Methoden zur Erstellung von plattformunabhängigen und wartbaren SaaS Anwendungen.
+## Prerequisites
 
-Die Programmiersprache, verwendete Frameworks und Services - wie z.B. Datenbanken - haben dabei keinen Einfluss auf die Verwendung dieser Methode.
+Before starting, ensure you have:
+- A stable internet connection.
+- Basic knowledge of the terminal.
 
-### #2 Dependencies erklärt
+---
 
-Damit eine Anwendung plattformunabhängig betrieben werden kann, muss zu jedem Zeitpunkt der Ausführung sichergestellt werden, dass alle benötigten Softwarepakete/Libaries in der richtigen Version vorhanden sind. Dazu gibt es für diverse Programmiersprachen in der Entwicklungsphase einen "Dependency-Manager", der sich um die Einbindung der definierten Pakte in dem Projekt kümmert.
+## Step-by-Step Guide
 
-Die Verwaltung von Abhängigkeiten besteht aus zwei Teilen, die beide erfüllt sein müssen, um diesen Faktor zur gänze zu erfüllen:
+### 1. Install Homebrew
 
-- Deklaration von Abhänigkeiten
+Homebrew is a package manager for macOS that simplifies installing software.
 
-- Isolation von Abhängigkeiten
+Run the following command to install Homebrew:
 
-###### Deklaration von Abhänigkeiten
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
-Je nach Programmiersprache wird eine Abhängigkeitsdeklaration in einer Datei erstellt, die diese durch Ausführung eines Befehls interpretiert und alle Paket auf dem Entwicklersystem zur Verfügung stellt. In der Produktion werden diese Pakete dann mit der Anwendung ausgeliefert.
+---
 
-###### Isolation von Abhängigkeiten
+### 2. Install Minikube with Homebrew
 
-Während der Laufzeit wird sichergestellt, dass implizite Abhängigkeiten nicht auf anderen Wegen eines Subsystems benutzt werden. Dabei ist es notwendig, die Version eines Paketes explizit zu definieren.
+Minikube allows you to run Kubernetes locally. Install it using Homebrew:
 
-### #4 Backing Service erklärt
+```bash
+brew install minikube
+```
 
-Bei Backing Services handelt es sich um Dienste, die an eine Anwendung angehängt sind und diese konsumiert. Der Vorteil dieser Verbindungsart besteht in der Möglichkeit, Dienste einfach auszutauschen, ohne Codeänderungen in der Anwendung durchzuführen.
+After installation, verify Minikube is installed correctly:
 
-Als Beispiel: Eine Anwendung verwendet einen externen Zahlungsdienstleister, Firma A, zum verarbeiten der Zahlungen. Dieser Anbieter erhöhte die Preise, und die Administratoren finden einen anderen Anbieter, Firma B. Durch die Sicht des Payment Gateways als "angehängte Ressourcen", müssen nur die Konfirgurationsparamter in Richtung des neuen Anbieters (Firma B) geändert werden. Es sind keine weiteren Codeänderungen an der Anwendung nötig. Hierbei ist auch unerheblich, ob die Änderung von intern (eigene Payment Software) oder extern (SaaS Payment Anbieter) durchgeführt wird.
+```bash
+minikube version
+```
 
-Weitere Beispiele von angehängten Diensten sind:
+---
 
-- Datenbanken
+### 3. Start Minikube
 
-- Payment Gateways
+Start the Minikube cluster:
 
-- Storage
+```bash
+minikube start
+```
 
-- CRM (Kundenmanagement System)
+---
 
-### Quellen
+### 4. Apply Kubernetes Configurations
 
-[The Twelve-Factor App | FORTIX GmbH](https://fortix.io/blog/die-12-faktoren-app)[The Twelve-Factor App | FORTIX GmbH](https://fortix.io/blog/die-12-faktoren-app)
+Use `kubectl` to apply the YAML files for different components of your application. Ensure `kubectl` is configured correctly for Minikube:
 
-https://12factor.net
+1. **Apply all `.yaml` files from the `billing-db` folder:**
 
-[Twelve-Factor App: 12 Prinzipien zur Entwicklung von Webanwendungen](https://www.hosteurope.de/blog/die-twelve-factor-app-12-prinzipien-fuer-die-einfache-und-komfortable-entwicklung-von-webanwendungen/)
+   ```bash
+   kubectl apply -f billing-db/
+   ```
 
-Developing, deploying, and operating twelve-factor applications with TOSCA [Developing, deploying, and operating twelve-factor applications with TOSCA | Proceedings of the 19th International Conference on Information Integration and Web-based Applications & Services](https://dl.acm.org/doi/abs/10.1145/3151759.3151830)
+2. **Apply all `.yaml` files from the `mysql` folder:**
+
+   ```bash
+   kubectl apply -f mysql/
+   ```
+
+3. **Apply all `.yaml` files from the `radius-service` folder:**
+
+   ```bash
+   kubectl apply -f radius-service/
+   ```
+
+---
+
+### Alternative: Use the `deploy-services.sh` Script
+
+Instead of running each command manually, you can use the provided `deploy-services.sh` script to apply all configurations at once.
+
+1. Make the script executable:
+
+   ```bash
+   chmod +x deploy-services.sh
+   ```
+
+2. Run the script:
+
+   ```bash
+   ./deploy-services.sh
+   ```
+
+This will automatically deploy all the services.
+---
+### 5. Testing the Radius Service
+
+The `radius-service` is not exposed externally (using `NodePort`) as it is intended for internal cluster communication. You can still test the service locally by using **port forwarding**.
+
+Run the following command to forward the port:
+
+```bash
+kubectl port-forward svc/radius-service 8000:80
+```
+
+Once the port forwarding is active, you can test the service locally with a `curl` command:
+
+```bash
+curl -X GET "http://localhost:8000" -H "username-header: mresch" -H "pass-header: 12345678"
+```
+
+This will send a test request to the `radius-service` and verify its functionality.
+
+---
+### 6. Verify Deployment
+
+After applying all configurations, verify that your pods and services are running:
+
+```bash
+kubectl get pods
+kubectl get services
+```
+
+---
+
+## Additional Notes
+
+- If you encounter any issues, check the logs of the pods for debugging:
+  ```bash
+  kubectl logs <pod-name>
+  ```
+- Minikube dashboard can provide a visual overview of your cluster:
+  ```bash
+  minikube dashboard
+  ```
+
+---
+
+This concludes the setup guide. If you have questions or issues, feel free to reach out! 😊
